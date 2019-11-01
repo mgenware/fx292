@@ -17,8 +17,8 @@
     "test": "yarn run clean && yarn run compile && yarn run lint && yarn run t",
     "t": "mocha --require source-map-support/register dist_tests/**/*.test.js",
     "build": "cross-env NODE_ENV=production yarn test",
-    "compile": "tsc -b src",
-    "dev": "cross-env NODE_ENV=development yarn run clean && yarn && tsc -b src -w",
+    "compile": "tsc -b tests",
+    "dev": "cross-env NODE_ENV=development yarn run clean && yarn && tsc -b tests -w",
     "prepublishOnly": "yarn run test",
     "lint": "eslint --max-warnings 0 --ext .ts src/ tests/",
     "clean": "del-cli dist && del-cli dist_tests"

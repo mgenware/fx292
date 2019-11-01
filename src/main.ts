@@ -10,26 +10,30 @@ function getArg(idx: number, name: string): string {
   return args[idx];
 }
 
-let orgUrl = getArg(0, 'org');
-let repo = getArg(1, 'repo');
-let token = getArg(2, 'token');
+const orgUrl = getArg(0, 'org');
+const repo = getArg(1, 'repo');
+const token = getArg(2, 'token');
+// eslint-disable-next-line no-console
 console.log(`Repo: "${repo}"`);
-let authHandler = azdev.getPersonalAccessTokenHandler(token);
-let connection = new azdev.WebApi(orgUrl, authHandler);
+const authHandler = azdev.getPersonalAccessTokenHandler(token);
+const connection = new azdev.WebApi(orgUrl, authHandler);
 async function run() {
+  // eslint-disable-next-line no-console
   console.log('Reading input file...');
   const inputString = await mfs.readTextFileAsync('input.txt');
   const commits = inputString.trim().split(/\r?\n/);
 
+  // eslint-disable-next-line no-console
   console.log('Connecting to services...');
-  let git = await connection.getGitApi();
-  let wi = await connection.getWorkItemTrackingApi();
+  const git = await connection.getGitApi();
+  const wi = await connection.getWorkItemTrackingApi();
   const workItemSet = new Set<number>();
 
   let commitsMarkdown = '';
   for (const cid of commits) {
+    // eslint-disable-next-line no-console
     console.log(`Fetching commit ${cid}`);
-    let commit = await git.getCommit(cid, repo);
+    const commit = await git.getCommit(cid, repo);
     const comment = commit.comment || '';
     const commentLines = comment.split('\n');
     if (!commentLines.length) {
@@ -59,6 +63,7 @@ async function run() {
     }: ${commentLines[0]} [${cid}](${commit._links!.web.href})\n`;
   }
   const workItemIDs = [...workItemSet];
+  // eslint-disable-next-line no-console
   console.log(`Fetching work item ${workItemIDs}`);
   const wiReq: WorkItemTrackingInterfaces.WorkItemBatchGetRequest = {};
   wiReq.ids = workItemIDs;
@@ -77,6 +82,7 @@ async function run() {
   md += `\n\n### Commits\n\n${commitsMarkdown}\n`;
 
   await mfs.writeFileAsync('workItems.md', md);
+  // eslint-disable-next-line no-console
   console.log('Action succeeded!');
 }
 
