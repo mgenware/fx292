@@ -1,0 +1,45 @@
+{
+  "name": "fx292",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Extract Azure DevOps work item information from commits",
+  "main": "dist/main.js",
+  "types": "dist/main.d.ts",
+  "author": "Mgen (https://www.mgenware.com)",
+  "homepage": "https://github.com/mgenware/fx292",
+  "bugs": "https://github.com/mgenware/fx292/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mgenware/fx292.git"
+  },
+  "license": "MIT",
+  "scripts": {
+    "test": "yarn run clean && yarn run compile && yarn run lint && yarn run t",
+    "t": "mocha --require source-map-support/register dist_tests/**/*.test.js",
+    "build": "cross-env NODE_ENV=production yarn test",
+    "compile": "tsc -b src",
+    "dev": "cross-env NODE_ENV=development yarn run clean && yarn && tsc -b src -w",
+    "prepublishOnly": "yarn run test",
+    "lint": "eslint --max-warnings 0 --ext .ts src/ tests/",
+    "clean": "del-cli dist && del-cli dist_tests"
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "devDependencies": {
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.12.3",
+    "@typescript-eslint/eslint-plugin": "^2.6.0",
+    "@typescript-eslint/parser": "^2.6.0",
+    "azure-devops-node-api": "^9.0.1",
+    "cross-env": "^6.0.3",
+    "del-cli": "^3.0.0",
+    "eslint": "^6.6.0",
+    "mocha": "^6.2.2",
+    "source-map-support": "^0.5.16",
+    "typescript": "^3.6.4"
+  },
+  "dependencies": {
+    "m-fs": "^2.3.2"
+  }
+}
