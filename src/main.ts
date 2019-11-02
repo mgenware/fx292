@@ -14,17 +14,17 @@ const orgUrl = getArg(0, 'org');
 const repo = getArg(1, 'repo');
 const token = getArg(2, 'token');
 // eslint-disable-next-line no-console
-console.log(`Repo: "${repo}"`);
+console.log(`🏁 Org: "${orgUrl}"\n🏚 Repo: "${repo}"`);
 const authHandler = azdev.getPersonalAccessTokenHandler(token);
 const connection = new azdev.WebApi(orgUrl, authHandler);
 async function run() {
   // eslint-disable-next-line no-console
-  console.log('Reading input file...');
+  console.log('💼 Reading input file...');
   const inputString = await mfs.readTextFileAsync('input.txt');
   const commits = inputString.trim().split(/\r?\n/);
 
   // eslint-disable-next-line no-console
-  console.log('Connecting to services...');
+  console.log('🌍 Connecting to services...');
   const git = await connection.getGitApi();
   const wi = await connection.getWorkItemTrackingApi();
   const workItemSet = new Set<number>();
@@ -32,7 +32,7 @@ async function run() {
   let commitsMarkdown = '';
   for (const cid of commits) {
     // eslint-disable-next-line no-console
-    console.log(`Fetching commit ${cid}`);
+    console.log(`🚙 Fetching commit ${cid}`);
     const commit = await git.getCommit(cid, repo);
     const comment = commit.comment || '';
     const commentLines = comment.split('\n');
@@ -64,7 +64,7 @@ async function run() {
   }
   const workItemIDs = [...workItemSet];
   // eslint-disable-next-line no-console
-  console.log(`Fetching work item ${workItemIDs}`);
+  console.log(`🧾 Fetching work items ${workItemIDs}`);
   const wiReq: WorkItemTrackingInterfaces.WorkItemBatchGetRequest = {};
   wiReq.ids = workItemIDs;
   wiReq.$expand = WorkItemTrackingInterfaces.WorkItemExpand.Links;
@@ -83,7 +83,7 @@ async function run() {
 
   await mfs.writeFileAsync('workItems.md', md);
   // eslint-disable-next-line no-console
-  console.log('Action succeeded!');
+  console.log('👏 Action succeeded!');
 }
 
 run();
