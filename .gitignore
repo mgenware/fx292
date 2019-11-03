@@ -4,5 +4,3 @@ dist/
 *.log
 *.pid
 *.seed
-
-/workItems.md
