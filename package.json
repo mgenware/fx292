@@ -1,6 +1,6 @@
 {
   "name": "fx292",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Extract Azure DevOps work item information from commits",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
@@ -41,7 +41,7 @@
     "typescript": "^3.6.4"
   },
   "dependencies": {
-    "m-fs": "^2.3.2",
-    "azure-devops-node-api": "^9.0.1"
+    "azure-devops-node-api": "^9.0.1",
+    "m-fs": "^2.3.2"
   }
 }
