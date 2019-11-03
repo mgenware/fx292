@@ -1,6 +1,5 @@
 {
   "name": "fx292",
-  "private": true,
   "version": "0.0.0",
   "description": "Extract Azure DevOps work item information from commits",
   "main": "dist/main.js",
