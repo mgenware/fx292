@@ -60,9 +60,10 @@ async function run() {
       workItemSet.add(wid);
     }
 
-    commitsMarkdown += `- ${commit.author!.date!.toDateString()} ${
-      commit.author!.name
-    }: ${commentLines[0]} [${cid}](${commit._links!.web.href})\n`;
+    const authorInfo = commit.author || {};
+    const linksInfo = commit._links || {};
+    const authorDate = authorInfo.date ? authorInfo.date.toDateString() : '';
+    commitsMarkdown += `- ${authorDate} ${authorInfo.name}: ${commentLines[0]} [${cid}](${linksInfo.web.href})\n`;
   }
   const workItemIDs = [...workItemSet];
   // eslint-disable-next-line no-console
