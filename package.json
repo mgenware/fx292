@@ -12,6 +12,9 @@
     "type": "git",
     "url": "https://github.com/mgenware/fx292.git"
   },
+  "bin": {
+    "fx292": "./dist/main.js"
+  },
   "license": "MIT",
   "scripts": {
     "test": "yarn run clean && yarn run compile && yarn run lint && yarn run t",

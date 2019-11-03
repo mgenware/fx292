@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import * as azdev from 'azure-devops-node-api';
 import * as WorkItemTrackingInterfaces from 'azure-devops-node-api/interfaces/WorkItemTrackingInterfaces';
 import * as mfs from 'm-fs';
