@@ -16,12 +16,12 @@ const orgUrl = getArg(0, 'org');
 const repo = getArg(1, 'repo');
 const token = getArg(2, 'token');
 // eslint-disable-next-line no-console
-console.log(`🏁 Org: "${orgUrl}"\n🏚 Repo: "${repo}"`);
+console.log(`Org: "${orgUrl}"\nRepo: "${repo}"`);
 const authHandler = azdev.getPersonalAccessTokenHandler(token);
 const connection = new azdev.WebApi(orgUrl, authHandler);
 async function run() {
   // eslint-disable-next-line no-console
-  console.log('💼 Reading input file...');
+  console.log('Reading input file...');
   const inputString = await mfs.readTextFileAsync('input.txt');
   const commits = inputString.trim().split(/\r?\n/);
 
@@ -32,9 +32,13 @@ async function run() {
   const workItemSet = new Set<number>();
 
   let commitsMarkdown = '';
+  let commitNo = 1;
   for (const cid of commits) {
+    const shortCid = cid.substring(0, 8);
     // eslint-disable-next-line no-console
-    console.log(`🚙 Fetching commit ${cid}`);
+    console.log(
+      `🚙 Fetching commit ${shortCid} (${commitNo++}/${commits.length})`,
+    );
     const commit = await git.getCommit(cid, repo);
     const comment = commit.comment || '';
     const commentLines = comment.split('\n');
@@ -62,12 +66,17 @@ async function run() {
 
     const authorInfo = commit.author || {};
     const linksInfo = commit._links || {};
-    const authorDate = authorInfo.date ? authorInfo.date.toDateString() : '';
-    commitsMarkdown += `- ${authorDate} ${authorInfo.name}: ${commentLines[0]} [${cid}](${linksInfo.web.href})\n`;
+    const authorDate = authorInfo.date
+      ? authorInfo.date.toLocaleString(undefined, {
+          month: '2-digit',
+          day: '2-digit',
+        })
+      : '';
+    commitsMarkdown += `- ${authorDate} - ${commentLines[0]} [${shortCid}](${linksInfo.web.href}) - ${authorInfo.name}\n`;
   }
   const workItemIDs = [...workItemSet];
   // eslint-disable-next-line no-console
-  console.log(`🧾 Fetching work items ${workItemIDs}`);
+  console.log(`🚒 Fetching work items ${workItemIDs}`);
   const wiReq: WorkItemTrackingInterfaces.WorkItemBatchGetRequest = {};
   wiReq.ids = workItemIDs;
   wiReq.$expand = WorkItemTrackingInterfaces.WorkItemExpand.Links;
@@ -78,7 +87,7 @@ async function run() {
   for (const item of workItems) {
     const map = item.fields || {};
     if (item.id) {
-      md += `- [${map['System.Title']}](${item._links.html.href}): ${map['System.CreatedBy'].displayName}\n`;
+      md += `- [${map['System.Title']}](${item._links.html.href}) - ${map['System.CreatedBy'].displayName}\n`;
     }
   }
 
