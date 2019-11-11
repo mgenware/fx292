@@ -5,11 +5,17 @@ import * as WorkItemTrackingInterfaces from 'azure-devops-node-api/interfaces/Wo
 import * as mfs from 'm-fs';
 const args = process.argv.slice(2);
 
+const RELATED_WORK_ITEMS = 'Related work items: ';
+
 function getArg(idx: number, name: string): string {
   if (idx >= args.length || !args[idx]) {
     throw new Error(`Missing required argument "${name}"`);
   }
   return args[idx];
+}
+
+function printNoWorkItemFoundForCommit(id: string) {
+  console.log(`⛔️ No work item attached to commit ${id}`);
 }
 
 const orgUrl = getArg(0, 'org');
@@ -46,12 +52,17 @@ async function run() {
       throw new Error(`Unexpected single-line commit message "${comment}"`);
     }
     let lastLine = commentLines[commentLines.length - 1];
+    if (!lastLine || !lastLine.startsWith(RELATED_WORK_ITEMS)) {
+      printNoWorkItemFoundForCommit(shortCid);
+      continue;
+    }
     // Remove the "Related work items:"
-    lastLine = lastLine.substr('Related work items: '.length);
+    lastLine = lastLine.substr(RELATED_WORK_ITEMS.length);
     // Split by ','
     const workItemIDStrings = lastLine.split(',');
     if (!workItemIDStrings.length) {
-      throw new Error(`No work items found on commit"${comment}"`);
+      printNoWorkItemFoundForCommit(shortCid);
+      continue;
     }
     // Remove the starting # for each work item
     const workItemIDs = workItemIDStrings.map(s =>
