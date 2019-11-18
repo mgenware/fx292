@@ -3,6 +3,7 @@
 import * as azdev from 'azure-devops-node-api';
 import * as WorkItemTrackingInterfaces from 'azure-devops-node-api/interfaces/WorkItemTrackingInterfaces';
 import * as mfs from 'm-fs';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const { version } = require('../package.json');
 const args = process.argv.slice(2);
 
@@ -16,9 +17,11 @@ function getArg(idx: number, name: string): string {
 }
 
 function printNoWorkItemFoundForCommit(id: string) {
+  // eslint-disable-next-line no-console
   console.log(`⛔️ No work item attached to commit ${id}`);
 }
 
+// eslint-disable-next-line no-console
 console.log(`>>> Fx292 ${version}`);
 const orgUrl = getArg(0, 'org');
 const repo = getArg(1, 'repo');
