@@ -3,6 +3,7 @@
 import * as azdev from 'azure-devops-node-api';
 import * as WorkItemTrackingInterfaces from 'azure-devops-node-api/interfaces/WorkItemTrackingInterfaces';
 import * as mfs from 'm-fs';
+const { version } = require('../package.json');
 const args = process.argv.slice(2);
 
 const RELATED_WORK_ITEMS = 'Related work items: ';
@@ -18,6 +19,7 @@ function printNoWorkItemFoundForCommit(id: string) {
   console.log(`⛔️ No work item attached to commit ${id}`);
 }
 
+console.log(`>>> Fx292 ${version}`);
 const orgUrl = getArg(0, 'org');
 const repo = getArg(1, 'repo');
 const token = getArg(2, 'token');
