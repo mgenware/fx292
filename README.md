@@ -12,5 +12,5 @@ hash2
 hash3
 ```
 
-- Run `npx fx292 <org URL> <repo ID> <access token>` to start crawling data
+- Run `npx fx292@1 <org URL> <repo ID> <access token>` to start crawling data
 - Ouput is saved to `workItem.md` in Markdown format if everything goes well
