@@ -10,7 +10,7 @@ import * as utils from './utils';
 const { version } = require('../package.json');
 
 const RELATED_WORK_ITEMS = 'Related work items: ';
-const CMD = 'fx292';
+const CMD = 'npx fx292@2';
 
 function printNoWorkItemFoundForCommit(id: string) {
   console.log(`⛔️ No work item attached to commit ${id}`);
@@ -33,7 +33,8 @@ const cli = parseArgs(
       --out-file       If specified, writes the output to the file.
  
     Examples
-      $ ${CMD} https://dev.azure.com/mycompany project:repo <my_access_token> --input-range abcabcabc..abcabcabc
+      $ ${CMD} https://dev.azure.com/mycompany project:repo <my_access_token> --input-range abcabcabc..abcabcabc --out-file CHANGELOG.md
+      $ ${CMD} https://dev.azure.com/mycompany <repo GUID> <my_access_token> --input-file commits.txt --out-file CHANGELOG.md
 `,
   {
     flags: {
@@ -57,7 +58,7 @@ if (!flags.inputFile && !flags.inputRange) {
 
 console.log(`>>> ${CMD} ${version}`);
 const orgUrl = cli.input[0];
-const repo = cli.input[1];
+const repo = utils.parseRepoString(cli.input[1]);
 const token = cli.input[2];
 console.log(`Org: "${orgUrl}"\nRepo: "${repo}"`);
 const authHandler = azdev.getPersonalAccessTokenHandler(token);
@@ -91,7 +92,10 @@ async function run() {
     console.log(
       `🚙 Fetching commit ${shortCid} (${commitNo++}/${commits.length})`,
     );
-    const commit = await git.getCommit(cid, repo);
+    const commit =
+      typeof repo === 'string'
+        ? await git.getCommit(cid, repo)
+        : await git.getCommit(cid, repo.name, repo.project);
     const comment = commit.comment || '';
     const commentLines = comment.split('\n');
     if (!commentLines.length) {

@@ -18,3 +18,20 @@ export async function getCommitsFromFileAsync(file: string): Promise<string[]> {
   const content = await mfs.readTextFileAsync(file);
   return splitByLines(content);
 }
+
+export interface RepoName {
+  project: string;
+  name: string;
+}
+
+export function parseRepoString(s: string): string | RepoName {
+  if (s.includes(':')) {
+    const parts = s.split(':');
+    return {
+      project: parts[0] || '',
+      name: parts[1] || '',
+    };
+  }
+  // s is a GUID.
+  return s;
+}
