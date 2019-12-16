@@ -5,7 +5,7 @@
 
 Extract Azure DevOps work item information from commits, useful for making a CHANGELOG between two commits.
 
-**This only works on a branch with standard Azure DevOps quashed PRs only.**
+**This only works on a branch with standard Azure DevOps squashed PRs only.**
 
 ## Usage
 
