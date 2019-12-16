@@ -3,40 +3,82 @@
 import * as azdev from 'azure-devops-node-api';
 import * as WorkItemTrackingInterfaces from 'azure-devops-node-api/interfaces/WorkItemTrackingInterfaces';
 import * as mfs from 'm-fs';
+import * as parseArgs from 'meow';
+import * as nodepath from 'path';
+import * as utils from './utils';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { version } = require('../package.json');
-const args = process.argv.slice(2);
 
 const RELATED_WORK_ITEMS = 'Related work items: ';
-
-function getArg(idx: number, name: string): string {
-  if (idx >= args.length || !args[idx]) {
-    throw new Error(`Missing required argument "${name}"`);
-  }
-  return args[idx];
-}
+const CMD = 'fx292';
 
 function printNoWorkItemFoundForCommit(id: string) {
-  // eslint-disable-next-line no-console
   console.log(`⛔️ No work item attached to commit ${id}`);
 }
 
-// eslint-disable-next-line no-console
-console.log(`>>> Fx292 ${version}`);
-const orgUrl = getArg(0, 'org');
-const repo = getArg(1, 'repo');
-const token = getArg(2, 'token');
-// eslint-disable-next-line no-console
+const cli = parseArgs(
+  `
+    Usage
+      $ ${CMD} <org url> <repo id> <access token> [options]
+
+    <org url>: Your organization URL, e.g. https://dev.azure.com/mycompany.
+    <repo id>: Your repo ID, can be either of the following forms:
+        Repo GUID, e.g. 56d5b23e-a231-4e6c-b834-ae1526ac41d5.
+        Project name + repo name, e.g. "project:repo".
+    <access token>: Your personal access token (can grab one from Azure DevOps - User settings - Security - Personal Access Tokens).
+ 
+    Options
+      --input-file     Commits file path (one commit hash per line).
+      --input-range    Commit range, "abcabcabc..abcabcabc".
+      --out-file       If specified, writes the output to the file.
+ 
+    Examples
+      $ ${CMD} https://dev.azure.com/mycompany project:repo <my_access_token> --input-range abcabcabc..abcabcabc
+`,
+  {
+    flags: {
+      inputFile: {
+        type: 'string',
+      },
+      inputRange: {
+        type: 'string',
+      },
+      outFile: {
+        type: 'string',
+      },
+    },
+  },
+);
+
+const { flags } = cli;
+if (!flags.inputFile && !flags.inputRange) {
+  throw new Error(`No input specified. Please use "${CMD} --help" for help.`);
+}
+
+console.log(`>>> ${CMD} ${version}`);
+const orgUrl = cli.input[0];
+const repo = cli.input[1];
+const token = cli.input[2];
 console.log(`Org: "${orgUrl}"\nRepo: "${repo}"`);
 const authHandler = azdev.getPersonalAccessTokenHandler(token);
 const connection = new azdev.WebApi(orgUrl, authHandler);
 async function run() {
-  // eslint-disable-next-line no-console
-  console.log('Reading input file...');
-  const inputString = await mfs.readTextFileAsync('input.txt');
-  const commits = inputString.trim().split(/\r?\n/);
+  console.log('Reading input...');
 
-  // eslint-disable-next-line no-console
+  let commits: string[];
+  if (flags.inputRange) {
+    const { inputRange } = flags;
+    console.log(`Getting commits from range "${inputRange}"`);
+    commits = await utils.getCommitsFromRangeAsync(inputRange);
+  } else if (flags.inputFile) {
+    const absFile = nodepath.resolve(flags.inputFile);
+    console.log(`Getting commits from file "${absFile}"`);
+    commits = await utils.getCommitsFromFileAsync(absFile);
+  } else {
+    throw new Error(`No input specified. Please use "${CMD} --help" for help.`);
+  }
+  console.log(`Got ${commits.length} commit(s)`);
+
   console.log('🌍 Connecting to services...');
   const git = await connection.getGitApi();
   const wi = await connection.getWorkItemTrackingApi();
@@ -46,7 +88,6 @@ async function run() {
   let commitNo = 1;
   for (const cid of commits) {
     const shortCid = cid.substring(0, 8);
-    // eslint-disable-next-line no-console
     console.log(
       `🚙 Fetching commit ${shortCid} (${commitNo++}/${commits.length})`,
     );
@@ -91,7 +132,6 @@ async function run() {
     commitsMarkdown += `- ${authorDate} - ${commentLines[0]} [${shortCid}](${linksInfo.web.href}) - ${authorInfo.name}\n`;
   }
   const workItemIDs = [...workItemSet];
-  // eslint-disable-next-line no-console
   console.log(`🚒 Fetching work items ${workItemIDs}`);
   const wiReq: WorkItemTrackingInterfaces.WorkItemBatchGetRequest = {};
   wiReq.ids = workItemIDs;
@@ -109,8 +149,12 @@ async function run() {
 
   md += `\n\n### Commits\n\n${commitsMarkdown}\n`;
 
-  await mfs.writeFileAsync('workItems.md', md);
-  // eslint-disable-next-line no-console
+  if (flags.outFile) {
+    await mfs.writeFileAsync(flags.outFile, md);
+  } else {
+    // Output the result to console if outFile is not specified.
+    console.log(md);
+  }
   console.log('👏 Action succeeded!');
 }
 
