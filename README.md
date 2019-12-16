@@ -1,5 +1,8 @@
 # fx292
 
+[![npm version](https://img.shields.io/npm/v/fx292.svg?style=flat-square)](https://npmjs.com/package/fx292)
+[![Node.js Version](http://img.shields.io/node/v/fx292.svg?style=flat-square)](https://nodejs.org/en/)
+
 Extract Azure DevOps work item information from commits, useful for making a CHANGELOG between two commits.
 
 **This only works on a branch with standard Azure DevOps quashed PRs only.**
