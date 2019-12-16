@@ -10,8 +10,13 @@ export function splitByLines(str: string): string[] {
 export async function getCommitsFromRangeAsync(
   range: string,
 ): Promise<string[]> {
-  const { stdout } = await execAsync(`git rev-list --ancestry-path ${range}`);
-  return splitByLines(stdout);
+  try {
+    const { stdout } = await execAsync(`git rev-list --ancestry-path ${range}`);
+    return splitByLines(stdout);
+  } catch (err) {
+    err.message = `Note that you must be under the repo directory in order for "--input-range" to work!\n${err.message}`;
+    throw err;
+  }
 }
 
 export async function getCommitsFromFileAsync(file: string): Promise<string[]> {
