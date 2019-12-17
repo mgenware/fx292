@@ -60,6 +60,12 @@ console.log(`>>> ${CMD} ${version}`);
 const orgUrl = cli.input[0];
 const repo = utils.parseRepoString(cli.input[1]);
 const token = cli.input[2];
+if (!orgUrl || !repo || !token) {
+  throw new Error(
+    `Missing required arguments. Please use "${CMD} --help" for help.`,
+  );
+}
+
 console.log(`Org: "${orgUrl}"\nRepo: "${repo}"`);
 const authHandler = azdev.getPersonalAccessTokenHandler(token);
 const connection = new azdev.WebApi(orgUrl, authHandler);
