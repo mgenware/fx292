@@ -25,6 +25,11 @@
     "lint": "eslint --max-warnings 0 --ext .ts src/ tests/",
     "clean": "del-cli dist && del-cli dist_tests"
   },
+  "files": [
+    "/dist/**/*.js",
+    "/dist/**/*.ts",
+    "/dist/**/*.map"
+  ],
   "engines": {
     "node": ">=8.0.0"
   },
