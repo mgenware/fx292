@@ -12,10 +12,6 @@ const { version } = require('../package.json');
 const RELATED_WORK_ITEMS = 'Related work items: ';
 const CMD = 'npx fx292@2';
 
-function printNoWorkItemFoundForCommit(id: string) {
-  console.log(`⛔️ No work item attached to commit ${id}`);
-}
-
 const cli = parseArgs(
   `
     Usage
@@ -51,27 +47,31 @@ const cli = parseArgs(
   },
 );
 
-const { flags } = cli;
-if (!flags.inputFile && !flags.inputRange) {
-  throw new Error(`No input specified. Please use "${CMD} --help" for help.`);
+function printNoWorkItemFoundForCommit(id: string) {
+  console.log(`⛔️ No work item attached to commit ${id}`);
 }
 
-console.log(`>>> ${CMD} ${version}`);
-const orgUrl = cli.input[0];
-const repo = utils.parseRepoString(cli.input[1]);
-const token = cli.input[2];
-if (!orgUrl || !repo || !token) {
-  throw new Error(
-    `Missing required arguments. Please use "${CMD} --help" for help.`,
-  );
-}
+(async () => {
+  const { flags } = cli;
+  if (!flags.inputFile && !flags.inputRange) {
+    throw new Error(`No input specified. Please use "${CMD} --help" for help.`);
+  }
 
-console.log(`Org: "${orgUrl}"\nRepo: "${repo}"`);
-const authHandler = azdev.getPersonalAccessTokenHandler(token);
-const connection = new azdev.WebApi(orgUrl, authHandler);
-async function run() {
+  console.log(`>>> ${CMD} ${version}`);
+  const orgUrl = cli.input[0];
+  const repo = utils.parseRepoString(cli.input[1]);
+  const token = cli.input[2];
+  if (!orgUrl || !repo || !token) {
+    throw new Error(
+      `Missing required arguments. Please use "${CMD} --help" for help.`,
+    );
+  }
+
+  console.log(`Org: "${orgUrl}"\nRepo: "${repo}"`);
+  const authHandler = azdev.getPersonalAccessTokenHandler(token);
+  const connection = new azdev.WebApi(orgUrl, authHandler);
+
   console.log('Reading input...');
-
   let commits: string[];
   if (flags.inputRange) {
     const { inputRange } = flags;
@@ -166,6 +166,4 @@ async function run() {
     console.log(md);
   }
   console.log('👏 Action succeeded!');
-}
-
-run();
+})();
