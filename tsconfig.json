@@ -4,13 +4,12 @@
     "removeComments": true,
     "preserveConstEnums": true,
     "sourceMap": true,
-    "target": "esnext",
+    "target": "ES2018",
     "declaration": true,
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "downlevelIteration": true,
-    "experimentalDecorators": true,
-    "lib": ["es5", "es6", "es2017"]
+    "experimentalDecorators": true
   }
 }

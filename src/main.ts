@@ -7,10 +7,10 @@ import * as parseArgs from 'meow';
 import * as nodepath from 'path';
 import * as utils from './utils';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const { version } = require('../package.json');
+const pkg = require('../package.json');
 
 const RELATED_WORK_ITEMS = 'Related work items: ';
-const CMD = 'npx fx292@2';
+const CMD = `npx ${pkg.name}@${parseInt(pkg.version.split('.')[0])}`;
 
 const cli = parseArgs(
   `
@@ -57,7 +57,7 @@ function printNoWorkItemFoundForCommit(id: string) {
     throw new Error(`No input specified. Please use "${CMD} --help" for help.`);
   }
 
-  console.log(`>>> ${CMD} ${version}`);
+  console.log(`>>> ${CMD} ${pkg.version}`);
   const orgUrl = cli.input[0];
   const repo = utils.parseRepoString(cli.input[1]);
   const token = cli.input[2];
